@@ -1,0 +1,19 @@
+{
+  "name": "pulp-pulp",
+  "version": "1.0.0",
+  "author": "Jeremy Cline, Ilja Bobkevic, Justin Garrison",
+  "summary": "This module can be used to install and configure Pulp servers, consumers, and nodes",
+  "license": "GPL, Version 2.0",
+  "source": "https://github.com/pulp/puppet_deployment",
+  "project_page": "https://github.com/pulp/puppet_deployment",
+  "issues_url": "https://github.com/pulp/puppet_deployment/issues",
+  "dependencies": [
+    { "name": "puppetlabs/stdlib", "version_requirement": ">=4.3.1" }
+  ],
+  "operatingsystem_support": [
+    { "operatingsystem": "RedHat" },
+    { "operatingsystem": "CentOS" },
+    { "operatingsystem": "Fedora" }
+  ]
+}
+
