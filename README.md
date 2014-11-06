@@ -6,7 +6,6 @@
 2. [Module Description](#module-description)
 3. [Setup](#setup)
 4. [Usage](#usage)
-4. [Examples](#examples)
 5. [Reference](#reference)
 
 ## Overview
@@ -30,7 +29,7 @@ and a Qpid module of your choice to set up these dependencies as necessary.
  * Pulp yum repository.
  * Pulp packages.
  * Pulp configuration files.
- * The pulp_workers, pulp_celerybeat and pulp_resource_manager services
+ * The httpd, pulp_workers, pulp_celerybeat, and pulp_resource_manager services
 
 ###Beginning with Pulp
 
@@ -74,63 +73,81 @@ class {'::pulp::globals':
 class {'::pulp::server': }
 ```
 
-## Examples
+### Create a pulp repo
 
-Dependencies:
+With the custom pulp_repo type you can specify puppet or rpm repos (rpm default)
+ to sync.
 
-* puppetlabs/apache
-* puppetlabs/mongodb
-* example42/yum
-* dprince/qpid
-
-This is real world working node configuration example:
+```puppet
+class pulp::repo::epel_6 {
+     pulp_repo { 'epel-6-x86_64':    
+       # Default pulp admin login/password
+       ensure       => 'present', 
+       repo_type    => 'rpm',
+       login        => 'admin',
+       password     => 'admin',
+       display_name => 'epel 6 repo',
+       description  => 'epel 6 mirror',
+       feed         => 'http://download.fedoraproject.org/pub/epel/6/x86_64',
+       schedules    => '2012-12-16T00:00Z/P1D',
+       serve_http   => true,
+       serve_https  => true,
+     }
+ }
 ```
-  # dependency classes
-  class {'::yum':
-    defaultrepo => false
-  }
-  class { '::qpid::server':
-    config_file => '/etc/qpid/qpidd.conf'
-  }
-  class { '::mongodb::server': }
-  class { '::apache': }
 
-  # pulp classes
-  class { '::pulp::globals':
-    repo_priority => 15
-  }
-  class { '::pulp::server':
-    db_name      => 'pulp_database',
-    db_seed_list => 'localhost:27017',
-  }
-  class { '::pulp::admin':
-    verify_ssl => false
-  }
-  class { '::pulp::consumer':
-    verify_ssl => false
-  }
+You can also sync secure Red Hat repos with a valid customer cert and key. Make 
+sure you subscribe and attach to the correct pool before using the cert/key.
 
-  # dependency packages
-  package { [ 'qpid-cpp-server-store', 'python-qpid', 'python-qpid-qmf' ]:
-    ensure => 'installed',
-  }
+```puppet
+class pulp::repo::rhel_6_server {
+    pulp_repo { 'rhel-6-server-rpms':
+      # Default pulp admin login/password
+      ensure       => 'present',
+      display_name => 'Red Hat Enterprise Linux 6 Server (RPMs)',
+      feed         => 'https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/os',
+      relative_url => 'dist/rhel/server/6/6Server/x86_64/os',
+      feed_ca_cert => '/etc/rhsm/ca/redhat-uep.pem',
+      feed_cert    => '/etc/pki/entitlement/000000000000000.pem
+      feed_key     => '/etc/pki/entitlement/000000000000000-key.pem',
+      schedules    => '2012-12-16T02:00Z/P1D',
+      serve_http   => false,
+      serve_https  => true,
+    }
+}
 
-  # ordering
-  anchor { 'profile::pulp::server::start': }
-  anchor { 'profile::pulp::server::end': }
+```
+Puppet repos can be mirrored as well.
 
-  Anchor['profile::pulp::server::start']->
-  Class['::yum::repo::epel']->
-  Class['::qpid::server']->
-  Class['::mongodb::server']->
-  Class['::pulp::globals']->
-  Package['qpid-cpp-server-store'] -> Package['python-qpid'] -> Package['python-qpid-qmf'] ->
-  Class['::pulp::server']->
-  Class['::apache::service']->
-  Class['::pulp::admin']->
-  Class['::pulp::consumer']->
-  Anchor['profile::pulp::server::end']
+```puppet
+class pulp::repo::puppet_forge {
+    pulp_repo {'puppet_forge':
+        ensure       => 'present',
+        repo_type    => 'puppet',
+        display_name => 'puppet forge',
+        description  => "This is a mirror",
+        feed         => 'http://forge.puppetlabs.com',
+        queries      => ['query1', 'query2'],
+        schedules    => [ '2012-12-16T00:00Z/P1D', '2012-12-17T00:00Z/P1D' ],
+        serve_http   => true,
+        serve_https  => true,
+        notes        => {
+          'note1' => 'value 1',
+          'note2' => 'value 2'
+    }
+} 
+```
 
+Now you can have all the repos set up on a node with
+
+```puppet
+node pulp-server {
+    include pulp::server
+    include pulp::admin
+    include pulp::repo::puppet_forge
+    include pulp::repo::rhel_6_server
+    include pulp::repo::epel_6
+    }
 ```
 
 ## Reference
@@ -189,7 +206,7 @@ configuration file, which is documented in-line.
 
 ####`node_parent`
 If `true`, the Pulp Nodes Parent package group will be installed. This requires that
-OAuth is enabled and configured. The default is `false`.
+OAuth is enabled and configured.
 
 ####`enable_celerybeat`
 This setting can be used to enable the `pulp_celerybeat` service on this server.
@@ -460,3 +477,68 @@ This setting corresponds to the [messaging] `msg_clientcert` field.
 
 ####`profile_minutes`
 This setting corresponds to the [profile] `profile_minutes` field.
+
+####pulp_repo
+These settings apply to pulp_repo types and hosted repos.
+
+####`id`
+The repo-id field of the repository. must be unique. Does not need to be specified manually.
+
+####`ensure`
+Required and can be the standard puppet defaults.
+
+####`repo_type`
+Specifies the content type. Currently supports values rpm and puppet.
+Default value is rpm
+
+####`display_name`
+Display name of the repository.
+
+####`description`
+Description of the repository.
+
+####`feed`
+URL feed of the source of the repository.
+
+####`notes`
+Repository notes.
+
+####`validate`
+Will validate files upon syncing. Takes a lot of time.
+
+####`queries`
+Used for puppet repositories.
+
+####`schedules`
+Specify schedules (UTC timezone) for when the repository should sync.
+
+####`serve_https`
+Specify that the repo should be published to https link after sync.
+Default is true.
+
+####`serve_http`
+Sepcify that the repo should be published to http link after sync.
+default is false.
+
+####`relative_url`
+URL to publish the repository assuming server_http(s) is enabled.
+
+####`feed_ca_cert`
+Used for secure repos. Will verify CA cert of feed url.
+
+####`feed_cert`
+Certificate used for secure repositories in .pem format.
+
+####`feed_cert`
+Key file used to authenticate access to feed in -key.pem format.
+
+####`verify_ssl`
+Check SSL of the feed url host.
+
+####`login`
+Username to use for pulp-admin commands.
+Defaults to admin
+
+####`password`
+Password to use for pulp-admin commands.
+Defaults to admin
