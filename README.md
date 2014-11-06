@@ -162,6 +162,7 @@ sure you subscribe and attach to the correct pool before using the cert/key.
 class pulp::repo::rhel_6_server {
     pulp_repo { 'rhel-6-server-rpms':
       # Default pulp admin login/password
+<<<<<<< HEAD
       ensure         => 'present',
       display_name   => 'Red Hat Enterprise Linux 6 Server (RPMs)',
       feed           => 'https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/os',
