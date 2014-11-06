@@ -6,6 +6,7 @@
 2. [Module Description](#module-description)
 3. [Setup](#setup)
 4. [Usage](#usage)
+4. [Examples](#examples)
 5. [Reference](#reference)
 
 ## Overview
@@ -29,7 +30,7 @@ and a Qpid module of your choice to set up these dependencies as necessary.
  * Pulp yum repository.
  * Pulp packages.
  * Pulp configuration files.
- * The httpd, pulp_workers, pulp_celerybeat, and pulp_resource_manager services
+ * The pulp_workers, pulp_celerybeat and pulp_resource_manager services
 
 ###Beginning with Pulp
 
@@ -73,6 +74,64 @@ class {'::pulp::globals':
 class {'::pulp::server': }
 ```
 
+## Examples
+
+Dependencies:
+
+* puppetlabs/apache
+* puppetlabs/mongodb
+* example42/yum
+* dprince/qpid
+
+This is real world working node configuration example:
+```
+  # dependency classes
+  class {'::yum':
+    defaultrepo => false
+  }
+  class { '::qpid::server':
+    config_file => '/etc/qpid/qpidd.conf'
+  }
+  class { '::mongodb::server': }
+  class { '::apache': }
+
+  # pulp classes
+  class { '::pulp::globals':
+    repo_priority => 15
+  }
+  class { '::pulp::server':
+    db_name      => 'pulp_database',
+    db_seed_list => 'localhost:27017',
+  }
+  class { '::pulp::admin':
+    verify_ssl => false
+  }
+  class { '::pulp::consumer':
+    verify_ssl => false
+  }
+
+  # dependency packages
+  package { [ 'qpid-cpp-server-store', 'python-qpid', 'python-qpid-qmf' ]:
+    ensure => 'installed',
+  }
+
+  # ordering
+  anchor { 'profile::pulp::server::start': }
+  anchor { 'profile::pulp::server::end': }
+
+  Anchor['profile::pulp::server::start']->
+  Class['::yum::repo::epel']->
+  Class['::qpid::server']->
+  Class['::mongodb::server']->
+  Class['::pulp::globals']->
+  Package['qpid-cpp-server-store'] -> Package['python-qpid'] -> Package['python-qpid-qmf'] ->
+  Class['::pulp::server']->
+  Class['::apache::service']->
+  Class['::pulp::admin']->
+  Class['::pulp::consumer']->
+  Anchor['profile::pulp::server::end']
+
+```
 ### Create a pulp repo
 
 With the custom pulp_repo type you can specify puppet or rpm repos (rpm default)
@@ -150,6 +209,7 @@ node pulp-server {
     }
 ```
 
+
 ## Reference
 
 ### Classes
@@ -206,7 +266,7 @@ configuration file, which is documented in-line.
 
 ####`node_parent`
 If `true`, the Pulp Nodes Parent package group will be installed. This requires that
-OAuth is enabled and configured.
+OAuth is enabled and configured. The default is `false`.
 
 ####`enable_celerybeat`
 This setting can be used to enable the `pulp_celerybeat` service on this server.
@@ -478,7 +538,7 @@ This setting corresponds to the [messaging] `msg_clientcert` field.
 ####`profile_minutes`
 This setting corresponds to the [profile] `profile_minutes` field.
 
-####pulp_repo
+####Class: pulp::pulp_repo
 These settings apply to pulp_repo types and hosted repos.
 
 ####`id`
