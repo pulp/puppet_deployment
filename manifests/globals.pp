@@ -25,29 +25,25 @@ class pulp::globals (
                 fail("${::operatingsystem} ${::operatingsystemrelease} is unsupported.")
             }
         }
-        'RedHat': {
-            package { 'redhat-lsb':
-                ensure => 'installed'
-            } ->
-            yumrepo { 'Pulp repo':
-                name     => $repo_name,
-                descr    => $repo_descr,
-                baseurl  => "${repo_baseurl}/${::lsbmajdistrelease}Server/${::architecture}/",
-                enabled  => $repo_enabled,
-                gpgcheck => $repo_gpgcheck
+        'RedHat', 'CentOS': {
+            $release_version = $::operatingsystemmajrelease
+            if versioncmp($::facterversion, 2.0) < 0 {
+                package { 'redhat-lsb':
+                    ensure => 'installed'
+                }
+                $release_version = $::lsbmajdistrelease
+                Package['redhat-lsb'] -> Yumrepo['Pulp repo']
             }
-        }
-        'CentOS': {
             yumrepo { 'Pulp repo':
                 name     => $repo_name,
                 descr    => $repo_descr,
-                baseurl  => "${repo_baseurl}/${::operatingsystemmajrelease}Server/${::architecture}/",
+                baseurl  => "${repo_baseurl}/${release_version}Server/${::architecture}/",
                 enabled  => $repo_enabled,
                 gpgcheck => $repo_gpgcheck
             }
             # For compatibility with yum module
             if $priority != 0 {
-              Yumrepo['Pulp repo'] { priority => $repo_priority }
+                Yumrepo['Pulp repo'] { priority => $repo_priority }
             }
         }
         default: {
