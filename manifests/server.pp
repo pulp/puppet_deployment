@@ -14,7 +14,7 @@ class pulp::server (
     $db_replica_set         = undef,
 
     # Pulp server
-    $server_name        = $::fqdn,
+    $server_name        = $pulp::params::server,
     $server_key_url     = undef,
     $server_ks_url      = undef,
     $default_login      = undef,
@@ -81,7 +81,7 @@ class pulp::server (
     # Install node parent packages
     $node_parent = false,
 
-) inherits pulp::globals {
+) inherits pulp::params {
     if $::operatingsystem == 'RedHat' and $::lsbmajdistrelease == '5' {
         fail('Pulp servers are not supported on RHEL5.')
     }
