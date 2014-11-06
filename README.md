@@ -108,7 +108,7 @@ class pulp::repo::rhel_6_server {
       feed         => 'https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/os',
       relative_url => 'dist/rhel/server/6/6Server/x86_64/os',
       feed_ca_cert => '/etc/rhsm/ca/redhat-uep.pem',
-      feed_cert    => '/etc/pki/entitlement/000000000000000.pem
+      feed_cert    => '/etc/pki/entitlement/000000000000000.pem',
       feed_key     => '/etc/pki/entitlement/000000000000000-key.pem',
       schedules    => '2012-12-16T02:00Z/P1D',
       serve_http   => false,
