@@ -46,8 +46,8 @@ class pulp::globals (
                 gpgcheck => $repo_gpgcheck
             }
             # For compatibility with yum module
-            if $priority != 0 {
-              Yumrepo['Pulp repo'] { priority => $repo_priority }
+            if $::priority != 0 {
+                Yumrepo['Pulp repo'] { priority => $repo_priority }
             }
         }
         default: {

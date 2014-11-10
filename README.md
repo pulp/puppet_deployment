@@ -1,4 +1,5 @@
-# pulp puppet module
+# Pulp puppet module 
+[![Build Status](https://travis-ci.org/pulp/puppet_deployment.svg?branch=master)](https://travis-ci.org/pulp/puppet_deployment)
 
 ####Table of Contents
 
