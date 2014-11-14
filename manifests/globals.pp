@@ -32,7 +32,7 @@ class pulp::globals (
             yumrepo { 'Pulp repo':
                 name     => $repo_name,
                 descr    => $repo_descr,
-                baseurl  => "${repo_baseurl}/${::lsbmajdistrelease}Server/${::architecture}/",
+                baseurl  => "${repo_baseurl}/${::operatingsystemmajrelease}Server/${::architecture}/",
                 enabled  => $repo_enabled,
                 gpgcheck => $repo_gpgcheck
             }

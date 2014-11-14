@@ -82,15 +82,14 @@ class pulp::server (
     $node_parent = false,
 
 ) inherits pulp::globals {
-    if $::operatingsystem == 'RedHat' and $::lsbmajdistrelease == '5' {
-        fail('Pulp servers are not supported on RHEL5.')
+    if $::operatingsystem == 'RedHat' and $::operatingsystemmajrelease == '5' {
+      fail('Pulp servers are not supported on RHEL5.')
     }
 
     # Install, configure, and start the necessary services
-    anchor { 'pulp::server::start': }->
-    class { 'pulp::server::install': }->
-    class { 'pulp::server::config': }->
-    class { 'pulp::server::service': }->
-    anchor { 'pulp::server::end': }
+    class { 'pulp::server::install': } ->
+    class { 'pulp::server::config': } ~>
+    class { 'pulp::server::service': } ->
+    Class['pulp::server']
 }
 
