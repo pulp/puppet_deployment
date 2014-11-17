@@ -65,10 +65,10 @@ default, Pulp uses Qpid.
 ### Install and set up a Pulp server from the beta repository
 
 To install pulp from a different repository (here we use the Pulp beta repository)
-you will need to use the `pulp::globals` class:
+you will need to use the `pulp::repo` class:
 
 ```puppet
-class {'::pulp::globals':
+class {'::pulp::repo':
     repo_descr => 'Pulp Beta Repository',
     repo_baseurl => 'http://repos.fedorapeople.org/repos/pulp/pulp/beta/2.4/',
 } ->
@@ -97,7 +97,7 @@ This is real world working node configuration example:
   class { '::apache': }
 
   # pulp classes
-  class { '::pulp::globals':
+  class { '::pulp::repo':
     repo_priority => 15
   }
   class { '::pulp::server':
@@ -122,9 +122,9 @@ This is real world working node configuration example:
 
   Anchor['profile::pulp::server::start']->
   Class['::yum::repo::epel']->
-  Class['::qpid::server']->
   Class['::mongodb::server']->
-  Class['::pulp::globals']->
+  Class['::pulp::repo']->
+  Class['::qpid::server']->
   Package['qpid-cpp-server-store'] -> Package['python-qpid'] -> Package['python-qpid-qmf'] ->
   Class['::pulp::server']->
   Class['::apache::service']->
@@ -139,9 +139,10 @@ This is real world working node configuration example:
 ### Classes
 
 ####Public classes
-* `pulp::globals`: Configure settings that are not server/consumer specific.
+* `pulp::repo`: Configure pulp hosted yum repository.
 * `pulp::server`: Installs and configures a Pulp server
 * `pulp::consumer`: Installs and configures a Pulp consumer
+* `pulp::admin`: Installs and configures a Pulp admin
 
 ####Private classes
 * `pulp::params`: Provides a location to set default parameters for Pulp that can be overridden
@@ -151,8 +152,11 @@ This is real world working node configuration example:
 * `pulp::consumer::config`: Manages the configuration of a Pulp consumer
 * `pulp::consumer::install`: Manages the installation of the Pulp consumer packages
 * `pulp::consumer::service`: Manages the services necessary for a Pulp consumer
+* `pulp::admin::config`: Manages the configuration of a Pulp admin
+* `pulp::admin::install`: Manages the installation of the Pulp admin packages
+* `pulp::admin::service`: Manages the services necessary for a Pulp admin
 
-####Class: pulp::globals
+####Class: pulp::repo
 
 This class allows you to override what repository the Pulp packages come from.
 This is useful if you would like to install the Pulp beta. For more information
@@ -160,7 +164,7 @@ on these settings, see the repository options section of the yum.conf manual pag
 
 ####`repo_name`
 This setting is used to change the repository file name Puppet adds to `/etc/yum.repos.d/`.
-The default is 'pulp'.
+The default is 'pulp-stable'.
 
 ####`repo_descr`
 This setting is used to change the repository description. This is equivalent to the
@@ -180,6 +184,10 @@ This determines whether the repository is enabled or not. The value should be ei
 ####`repo_gpgcheck`
 This setting is used to determine whether or not to use GPG checking for the repository.
 the value should be either '1' or '0'. The default is '0'.
+
+####`repo_priority`
+This setting is used to change the repository priority. Might be required when other
+installed repositories have set priorities.
 
 ####Class: pulp::server
 
