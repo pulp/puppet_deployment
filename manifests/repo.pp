@@ -42,7 +42,7 @@ class pulp::repo (
             }
             # For compatibility with yum module
             if $repo_priority != 0 {
-                Yumrepo[$name] { priority => $repo_priority }
+                Yumrepo[$repo_name] { priority => $repo_priority }
             }
         }
         default: {

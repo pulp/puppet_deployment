@@ -13,7 +13,7 @@ describe 'pulp::server' do
       }
     end
 
-    it { should contain_class('pulp::globals') }
+    it { should contain_class('pulp::params') }
     it { should contain_class('pulp::server::install').that_comes_before('pulp::server::config') }
     it { should contain_class('pulp::server::config') }
     it { should contain_class('pulp::server::service').that_subscribes_to('pulp::server::config') }
