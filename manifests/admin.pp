@@ -1,7 +1,7 @@
 # Call this class to install the pulp-admin client
 
 class pulp::admin (
-    $pulp_server                = $::pulp_server,
+    $pulp_server                = $pulp::params::server,
     $pulp_port                  = 443,
     $pulp_api_prefix            = '/pulp/api',
     $pulp_rsa_pub               = '/etc/pki/pub/admin/server/rsa_pub.key',
@@ -19,7 +19,7 @@ class pulp::admin (
     $color_output               = true,
     $wrap_terminal              = false,
     $wrap_width                 = 80,
-) inherits pulp::globals {
+) inherits pulp::params {
     exec { 'yum install pulp-admin':
         command => '/usr/bin/yum -y groupinstall pulp-admin',
         unless  => '/usr/bin/yum grouplist "Pulp Admin" | /bin/grep -i "^Installed Groups"',

@@ -4,7 +4,7 @@
 
 class pulp::consumer (
     $pulp_server_ca_cert = undef,
-    $pulp_server        = $::pulp_server,
+    $pulp_server        = $pulp::params::server,
     $pulp_port          = 443,
     $pulp_login         = undef,
     $pulp_password      = undef,
@@ -55,7 +55,7 @@ class pulp::consumer (
 
     # Profile
     $profile_minutes = 240,
-) inherits pulp::globals {
+) inherits pulp::params {
     # Install, configure, and start the necessary services
     anchor { 'pulp::consumer::start': } ->
     class { 'pulp::consumer::install': } ->
