@@ -27,8 +27,8 @@ class pulp::server (
     $auth_rsa_pub = undef,
 
     # Security
-    $cacert                     = undef,
-    $cakey                      = undef,
+    $cacert                     = '/etc/pki/pulp/ca.crt',
+    $cakey                      = '/etc/pki/pulp/ca.key',
     $ssl_ca_cert                = undef,
     $user_cert_expiration       = undef,
     $consumer_cert_expiration   = undef,
@@ -75,8 +75,15 @@ class pulp::server (
     $enable_celerybeat          = true,
     $enable_resource_manager    = true,
 
+    # Importer configuration settings
+    $proxy_host     = undef,
+    $proxy_port     = undef,
+    $proxy_username = undef,
+    $proxy_password = undef,
+
     # Apache configuration settings
-    $wsgi_processes = undef,
+    $wsgi_processes             = 3,
+    $wsgi_threads               = 15,
 
     # Install node parent packages
     $node_parent = false,

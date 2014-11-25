@@ -27,7 +27,7 @@ class pulp::admin (
     } ->
     file { '/etc/pulp/admin/admin.conf':
         ensure  => present,
-        content => template('pulp/admin.conf.erb'),
+        content => template('pulp/etc/pulp/admin.conf.erb'),
         owner   => root,
         group   => root,
         mode    => '0644',
