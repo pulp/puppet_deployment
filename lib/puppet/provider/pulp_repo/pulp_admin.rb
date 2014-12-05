@@ -9,7 +9,7 @@ Puppet::Type::type(:pulp_repo).provide(:pulp_admin) do
       :notes           => @resource[:notes],
       :validate        => @resource[:validate],
       :queries         => @resource[:queries],
-      :schedules       => @resource[:schedules],
+      :sync_schedules  => @resource[:sync_schedules],
       :serve_http      => @resource[:serve_http],
       :serve_https     => @resource[:serve_https],
       :relative_url    => @resource[:relative_url],
@@ -33,7 +33,7 @@ Puppet::Type::type(:pulp_repo).provide(:pulp_admin) do
     :feed,
     :notes,
     :queries,
-    :schedules,
+    :sync_schedules,
     :serve_http,
     :serve_https,
     :relative_url].each do |x| 

@@ -39,8 +39,8 @@ module PuppetPulp
       output = `#{cmd}`
       raise "Could not create repo: #{output}" unless output =~ /Successfully created repository \[#{repo_id}\]/
 
-      if params[:schedules]
-        params[:schedules].each do |s|
+      if params[:sync_schedules]
+        params[:sync_schedules].each do |s|
           output = `pulp-admin #{repo_type} repo sync schedules create --repo-id=#{repo_id} -s #{s}`
           raise "Could not create schedule: #{output}" unless output =~ /Schedule successfully created/
         end
@@ -68,8 +68,8 @@ module PuppetPulp
         queries = importers_config && importers_config['Queries'] || ''
         queries = queries.split(/,/).map { |x| x.strip }
 
-        schedules = importers && importers['Scheduled Syncs'] || ''
-        schedules = schedules.split(/,/).map { |x| x.strip }
+        sync_schedules = importers && importers['Scheduled Syncs'] || ''
+        sync_schedules = sync_schedules.split(/,/).map { |x| x.strip }
 
         serve_http = distributors_config['Serve Http'] unless distributors_config.nil?
         serve_http = serve_http.is_a?(String) ? serve_http == 'True' : true
@@ -86,7 +86,7 @@ module PuppetPulp
           :notes => notes,
           :feed => feed,
           :queries => queries,
-          :schedules => schedules,
+          :sync_schedules => sync_schedules,
           :serve_http => serve_http,
           :serve_https => serve_https,
           :relative_url => relative_url,
@@ -124,7 +124,7 @@ module PuppetPulp
 
         # Easier to test
         me = self
-        singleton_class.send :define_method, :schedules= do |arr|
+        singleton_class.send :define_method, :sync_schedules= do |arr|
           repos = me.send :`, "pulp-admin #{repo_type} repo sync schedules list --repo-id=#{props[:id]}"
           repos.split(/\n/).each do |l|
             if l =~ /^Id:\s*(.+)/

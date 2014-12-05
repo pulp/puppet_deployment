@@ -57,10 +57,10 @@ Puppet::Type.newtype(:pulp_repo) do
     end
   end
 
-  newproperty(:schedules) do
-    schedules = []
+  newproperty(:sync_schedules) do
+    sync_schedules = []
     munge do |v|
-        schedules << v
+        sync_schedules << v
     end
   end
 
