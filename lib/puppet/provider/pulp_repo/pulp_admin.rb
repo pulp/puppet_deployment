@@ -34,6 +34,7 @@ Puppet::Type::type(:pulp_repo).provide(:pulp_admin) do
     :notes,
     :queries,
     :sync_schedules,
+    :schedules,
     :serve_http,
     :serve_https,
     :relative_url].each do |x| 

@@ -178,6 +178,83 @@ class pulp::repo::rhel_6_server {
 }
 
 ```
+### Create a pulp repo
+
+With the custom pulp_repo type you can specify puppet or rpm repos (rpm default)
+ to sync.
+
+```puppet
+class pulp::repo::epel_6 {
+     pulp_repo { 'epel-6-x86_64':    
+       # Default pulp admin login/password
+       ensure       => 'present', 
+       repo_type    => 'rpm',
+       login        => 'admin',
+       password     => 'admin',
+       display_name => 'epel 6 repo',
+       description  => 'epel 6 mirror',
+       feed         => 'http://download.fedoraproject.org/pub/epel/6/x86_64',
+       schedules    => '2012-12-16T00:00Z/P1D',
+       serve_http   => true,
+       serve_https  => true,
+     }
+ }
+```
+
+You can also sync secure Red Hat repos with a valid customer cert and key. Make 
+sure you subscribe and attach to the correct pool before using the cert/key.
+
+```puppet
+class pulp::repo::rhel_6_server {
+    pulp_repo { 'rhel-6-server-rpms':
+      # Default pulp admin login/password
+      ensure       => 'present',
+      display_name => 'Red Hat Enterprise Linux 6 Server (RPMs)',
+      feed         => 'https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/os',
+      relative_url => 'dist/rhel/server/6/6Server/x86_64/os',
+      feed_ca_cert => '/etc/rhsm/ca/redhat-uep.pem',
+      feed_cert    => '/etc/pki/entitlement/000000000000000.pem',
+      feed_key     => '/etc/pki/entitlement/000000000000000-key.pem',
+      schedules    => '2012-12-16T02:00Z/P1D',
+      serve_http   => false,
+      serve_https  => true,
+    }
+}
+
+```
+Puppet repos can be mirrored as well.
+
+```puppet
+class pulp::repo::puppet_forge {
+    pulp_repo {'puppet_forge':
+        ensure       => 'present',
+        repo_type    => 'puppet',
+        display_name => 'puppet forge',
+        description  => "This is a mirror",
+        feed         => 'http://forge.puppetlabs.com',
+        queries      => ['query1', 'query2'],
+        schedules    => [ '2012-12-16T00:00Z/P1D', '2012-12-17T00:00Z/P1D' ],
+        serve_http   => true,
+        serve_https  => true,
+        notes        => {
+          'note1' => 'value 1',
+          'note2' => 'value 2'
+    }
+} 
+```
+
+Now you can have all the repos set up on a node with
+
+```puppet
+node pulp-server {
+    include pulp::server
+    include pulp::admin
+    include pulp::repo::puppet_forge
+    include pulp::repo::rhel_6_server
+    include pulp::repo::epel_6
+    }
+```
+
 
 Puppet repos can be mirrored as well.
 
