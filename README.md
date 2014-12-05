@@ -133,64 +133,18 @@ This is real world node confifuration example:
   Anchor['profile::pulp::server::end']
 ```
 
-## Examples
+Now you can have all the repos set up on a node with
 
-Dependencies:
-
-* puppetlabs/apache
-* puppetlabs/mongodb
-* example42/yum
-* dprince/qpid
-
-This is real world working node configuration example:
+```puppet
+node pulp-server {
+    include pulp::server
+    include pulp::admin
+    include pulp::repo::puppet_forge
+    include pulp::repo::rhel_6_server
+    include pulp::repo::epel_6
+    }
 ```
-  # dependency classes
-  class {'::yum':
-    defaultrepo => false
-  }
-  class { '::qpid::server':
-    config_file => '/etc/qpid/qpidd.conf'
-  }
-  class { '::mongodb::server': }
-  class { '::apache': }
 
-  # pulp classes
-  class { '::pulp::globals':
-    repo_priority => 15
-  }
-  class { '::pulp::server':
-    db_name      => 'pulp_database',
-    db_seed_list => 'localhost:27017',
-  }
-  class { '::pulp::admin':
-    verify_ssl => false
-  }
-  class { '::pulp::consumer':
-    verify_ssl => false
-  }
-
-  # dependency packages
-  package { [ 'qpid-cpp-server-store', 'python-qpid', 'python-qpid-qmf' ]:
-    ensure => 'installed',
-  }
-
-  # ordering
-  anchor { 'profile::pulp::server::start': }
-  anchor { 'profile::pulp::server::end': }
-
-  Anchor['profile::pulp::server::start']->
-  Class['::yum::repo::epel']->
-  Class['::qpid::server']->
-  Class['::mongodb::server']->
-  Class['::pulp::globals']->
-  Package['qpid-cpp-server-store'] -> Package['python-qpid'] -> Package['python-qpid-qmf'] ->
-  Class['::pulp::server']->
-  Class['::apache::service']->
-  Class['::pulp::admin']->
-  Class['::pulp::consumer']->
-  Anchor['profile::pulp::server::end']
-
-```
 ### Create a pulp repo
 
 With the custom pulp_repo type you can specify puppet or rpm repos (rpm default)
@@ -221,7 +175,6 @@ sure you subscribe and attach to the correct pool before using the cert/key.
 class pulp::repo::rhel_6_server {
     pulp_repo { 'rhel-6-server-rpms':
       # Default pulp admin login/password
-<<<<<<< HEAD
       ensure         => 'present',
       display_name   => 'Red Hat Enterprise Linux 6 Server (RPMs)',
       feed           => 'https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/os',
@@ -257,19 +210,6 @@ class pulp::repo::puppet_forge {
     }
 } 
 ```
-
-Now you can have all the repos set up on a node with
-
-```puppet
-node pulp-server {
-    include pulp::server
-    include pulp::admin
-    include pulp::repo::puppet_forge
-    include pulp::repo::rhel_6_server
-    include pulp::repo::epel_6
-    }
-```
-
 
 ## Reference
 
