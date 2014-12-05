@@ -38,14 +38,14 @@ and a Qpid module of your choice to set up these dependencies as necessary.
 If you want a server installation of Pulp with the default configuration options
 you can run:
 
-```
+```puppet
 class {'::pulp::server':}
 ```
 
 If you need to customize configuration options (which you probably will) you can 
 do the following:
 
-```
+```puppet
 class {'::pulp::server':
    default_login    => 'jcline',
    default_password => 'hunter2'
@@ -133,17 +133,6 @@ This is real world node confifuration example:
   Anchor['profile::pulp::server::end']
 ```
 
-Now you can have all the repos set up on a node with
-
-```puppet
-node pulp-server {
-    include pulp::server
-    include pulp::admin
-    include pulp::repo::puppet_forge
-    include pulp::repo::rhel_6_server
-    include pulp::repo::epel_6
-    }
-```
 
 ### Create a pulp repo
 
@@ -209,6 +198,18 @@ class pulp::repo::puppet_forge {
           'note2' => 'value 2'
     }
 } 
+```
+
+Now you can have all the repos set up on a node with
+
+```puppet
+node pulp-server {
+    include pulp::server
+    include pulp::admin
+    include pulp::repo::puppet_forge
+    include pulp::repo::rhel_6_server
+    include pulp::repo::epel_6
+    }
 ```
 
 ## Reference
