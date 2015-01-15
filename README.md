@@ -12,7 +12,7 @@
 
 ## Overview
 
-Installs Pulp on RHEL and Fedora from the repository of your choice.
+Installs Pulp on RHEL, CentOS, and Fedora from the repository of your choice.
 
 ## Module Description
 
@@ -31,7 +31,8 @@ and a Qpid module of your choice to set up these dependencies as necessary.
  * Pulp yum repository.
  * Pulp packages.
  * Pulp configuration files.
- * The pulp_workers, pulp_celerybeat and pulp_resource_manager services
+ * Apache configuration for the Pulp WSGI application.
+ * The pulp_workers, pulp_celerybeat and pulp_resource_manager services.
 
 ###Beginning with Pulp
 
@@ -212,6 +213,27 @@ for more information. Options are `true` or `false`. The default is `true`.
 
 ####`wsgi_processes`
 This setting can be used to change the number of WSGI processes Pulp uses. The default is 3.
+
+###`wsgi_threads`
+This setting determines the number of threads each WSGI process has. The default is 15.
+
+###`proxy_host`
+If you are using a proxy, you can configure all repositories to import content using
+the given proxy host. Note that you will need to provide the port, username, and
+password as well. For more information, see the importer
+[configuration documentation](https://pulp-user-guide.readthedocs.org/en/latest/server.html#importers).
+
+###`proxy_port`
+If you are using a proxy, you can configure all repositories to import content using
+the given proxy port.
+
+###`proxy_username`
+If you are using a proxy, you can configure all repositories to import content using
+the given proxy username.
+
+###`proxy_password`
+If you are using a proxy, you can configure all repositories to import content using
+the given proxy password.
 
 ####`db_name`
 This setting corresponds to the [database] `name` field.
