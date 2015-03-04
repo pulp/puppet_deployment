@@ -1,5 +1,5 @@
 {
-    "proxy_host": "<%= @proxy_url %>",
+    "proxy_host": "<%= @proxy_host %>",
     <%- if @proxy_port %>
     "proxy_port": <%= @proxy_port %>,
     <% else %>
