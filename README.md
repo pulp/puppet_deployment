@@ -491,3 +491,15 @@ This setting corresponds to the [messaging] `msg_clientcert` field.
 
 ####`profile_minutes`
 This setting corresponds to the [profile] `profile_minutes` field.
+
+
+####Development
+
+If you wish to contribute to this module, there is a Vagrantfile in the
+repository that you can use to test your code. Simply type "vagrant up" to get
+the provisioning started, after following Pulp's
+[Vagrant Setup Instructions](https://github.com/pulp/pulp/blob/master/docs/dev-guide/contributing/dev_setup.rst#vagrant)
+that detail how to set up vagrant-libvirt with NFS. Due to some dependency bugs
+in the current Puppet code in this repository, vagrant up will not succeed on
+the first attempt, so it is necessary to follow up with a "vagrant provision"
+as well. The module being applied is vagrant/manifests/default.pp.
