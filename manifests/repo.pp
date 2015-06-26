@@ -25,7 +25,7 @@ class pulp::repo (
             }
         }
         'RedHat', 'CentOS': {
-            if versioncmp($::facterversion, 2.0) < 0 {
+            if versioncmp($::facterversion, '2.0') < 0 {
                 package { 'redhat-lsb':
                     ensure => 'installed'
                 }
