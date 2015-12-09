@@ -1,5 +1,12 @@
-# Pulp puppet module 
+# Pulp puppet module DEPRECATED
 [![Build Status](https://travis-ci.org/pulp/puppet_deployment.svg?branch=master)](https://travis-ci.org/pulp/puppet_deployment)
+
+## Deprecated
+
+This Puppet module is deprecated in favor of the
+[Katello puppet-pulp module](https://github.com/Katello/puppet-pulp). The Pulp team has been unable
+to maintain this module in addition to our own code, and it duplicated effort with the Katello
+project. No pull requests will be accepted here.
 
 ####Table of Contents
 
