@@ -49,6 +49,7 @@ class pulp::consumer (
     $msg_scheme        = 'tcp',
     $msg_host          = $::msg_host,
     $msg_port          = 5672,
+    $msg_vhost         = undef,
     $msg_transport     = rabbitmq,
     $msg_cacert        = undef,
     $msg_clientcert    = undef,
